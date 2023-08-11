@@ -23,14 +23,13 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     while (~ stack.is_null()) {
         ;; get the cell from the stack and convert it to a slice to be able to process it
         cell c = stack~pop_back();
-        slice s = c.begin_parse();
-        
-        ;; do something with s data
+
         if cell_hash(c) == hash {
           return c;
         }
 
         ;; if the current slice has any refs, add them to stack
+        slice s = c.begin_parse();        
         repeat (s.slice_refs()) {
             stack~push_back(s~load_ref());
         }
