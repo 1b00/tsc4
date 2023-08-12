@@ -22,23 +22,23 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
   int lenN = matrixA.tlen();
   int lenM = matrixA.at(0).tlen();
   int lenP = matrixB.at(0).tlen();
-  if (lenN < 4) { return null(); }
-  if (lenN > 32) { return null(); }
-  if (lenM < 4) { return null(); }
-  if (lenM > 32) { return null(); }
-  if (lenP < 4) { return null(); }
-  if (lenP > 32) { return null(); }
-  if (matrixB.tlen() != lenM) { return null(); }
-  int i = 0;
-  while (i < lenN) {
-    if (matrixA.at(i).tlen() != lenM) { return null(); }
-    i = i + 1;
-  }
-  int k = 0;
-  while (k < lenM) {
-    if (matrixB.at(k).tlen() != lenP) { return null(); }
-    k = k + 1;
-  }
+  ;; if (lenN < 4) { return null(); }
+  ;; if (lenN > 32) { return null(); }
+  ;; if (lenM < 4) { return null(); }
+  ;; if (lenM > 32) { return null(); }
+  ;; if (lenP < 4) { return null(); }
+  ;; if (lenP > 32) { return null(); }
+  ;; if (matrixB.tlen() != lenM) { return null(); }
+  ;; int i = 0;
+  ;; while (i < lenN) {
+  ;;   if (matrixA.at(i).tlen() != lenM) { return null(); }
+  ;;   i = i + 1;
+  ;; }
+  ;; int k = 0;
+  ;; while (k < lenM) {
+  ;;   if (matrixB.at(k).tlen() != lenP) { return null(); }
+  ;;   k = k + 1;
+  ;; }
 
   ;; calculate matrix
   tuple matrixC = empty_tuple();
