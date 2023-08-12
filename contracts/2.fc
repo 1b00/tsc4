@@ -42,13 +42,13 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 
   ;; calculate matrix
   tuple matrixC = empty_tuple();
-  int i = 0;
+  int (i, j, k, cellC) = 0;
   while (i < lenN) {
-      int j = 0;
+      j = 0;
       tuple matrixC_row = empty_tuple();
       while (j < lenP) {
-        int cellC = 0;
-        int k = 0;
+        cellC = 0;
+        k = 0;
         while (k < lenM) {
           cellC = cellC + matrixA.at(i).at(k) * matrixB.at(k).at(j);
 
