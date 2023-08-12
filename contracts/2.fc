@@ -28,7 +28,7 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
   ;; if (lenM > 32) { return null(); }
   ;; if (lenP < 4) { return null(); }
   ;; if (lenP > 32) { return null(); }
-  if (matrixB.tlen() != lenM) { return null(); }
+  ;; if (matrixB.tlen() != lenM) { return null(); } ;; This line reduces Points: 5.9738550786382465 to 5.97385259929509 GasValue: 18106473 to 18108213
   ;; int i = 0;
   ;; while (i < lenN) {
   ;;   if (matrixA.at(i).tlen() != lenM) { return null(); }
