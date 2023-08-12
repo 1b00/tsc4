@@ -22,13 +22,13 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
   int lenN = matrixA.tlen();
   int lenM = matrixA.at(0).tlen();
   int lenP = matrixB.at(0).tlen();
-  if (lenN < 4) { return null(); }
-  if (lenN > 32) { return null(); }
-  if (lenM < 4) { return null(); }
-  if (lenM > 32) { return null(); }
-  if (lenP < 4) { return null(); }
-  if (lenP > 32) { return null(); }
-  if (matrixB.tlen() != lenM) { return null(); }
+  if (lenN < 4) { return empty_tuple(); }
+  if (lenN > 32) { return empty_tuple(); }
+  if (lenM < 4) { return empty_tuple(); }
+  if (lenM > 32) { return empty_tuple(); }
+  if (lenP < 4) { return empty_tuple(); }
+  if (lenP > 32) { return empty_tuple(); }
+  if (matrixB.tlen() != lenM) { return empty_tuple(); }
 
   tuple result = empty_tuple();
   int i = 0;
