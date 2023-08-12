@@ -22,36 +22,47 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
   int lenN = matrixA.tlen();
   int lenM = matrixA.at(0).tlen();
   int lenP = matrixB.at(0).tlen();
-  if (lenN < 4) { return empty_tuple(); }
-  if (lenN > 32) { return empty_tuple(); }
-  if (lenM < 4) { return empty_tuple(); }
-  if (lenM > 32) { return empty_tuple(); }
-  if (lenP < 4) { return empty_tuple(); }
-  if (lenP > 32) { return empty_tuple(); }
-  if (matrixB.tlen() != lenM) { return empty_tuple(); }
+  if (lenN < 4) { return null(); }
+  if (lenN > 32) { return null(); }
+  if (lenM < 4) { return null(); }
+  if (lenM > 32) { return null(); }
+  if (lenP < 4) { return null(); }
+  if (lenP > 32) { return null(); }
+  if (matrixB.tlen() != lenM) { return null(); }
+  int i = 0;
+  while (i < lenN) {
+    if (matrixA.at(i).tlen() != lenM) { return null(); }
+    i = i + 1;
+  }
+  int k = 0;
+  while (k < lenM) {
+    if (matrixB.at(k).tlen() != lenP) { return null(); }
+    k = k + 1;
+  }
 
-  tuple result = empty_tuple();
+  ;; calculate matrix
+  tuple matrixC = empty_tuple();
   int i = 0;
   while (i < lenN) {
       int j = 0;
-      tuple result_row = empty_tuple();
+      tuple matrixC_row = empty_tuple();
       while (j < lenP) {
-        int resultIJ = 0;
+        int cellC = 0;
         int k = 0;
         while (k < lenM) {
-          resultIJ = resultIJ + matrixA.at(i).at(k) * matrixB.at(k).at(j);
+          cellC = cellC + matrixA.at(i).at(k) * matrixB.at(k).at(j);
 
           k = k + 1;
         }
-        result_row~tpush(resultIJ);
+        matrixC_row~tpush(cellC);
           
         j = j + 1;
       }
-      result~tpush(result_row);
+      matrixC~tpush(matrixC_row);
 
       i = i + 1;
   }
 
-  return result;
+  return matrixC;
 }
 
