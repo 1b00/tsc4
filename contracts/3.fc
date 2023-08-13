@@ -44,6 +44,7 @@ tuple binstring_to_tuple(cell c) {
   tuple result = empty_tuple();
   repeat (slice_depth(chunk) + 1) {
     int i = 0;
+    chunk~load_bits(32);
     while (i < slice_bits(chunk)) {
       result~tpush(chunk.skip_bits(i).preload_uint(1));
       i = i + 1;
