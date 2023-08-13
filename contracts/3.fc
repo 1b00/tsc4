@@ -90,13 +90,13 @@ tuple replace(tuple flag_bits, tuple value_bits, tuple binstring_bits) {
 }
 
 cell create_cell_from_bits(tuple result_bits) {
-  builder b = begin_cell();
+  builder b = begin_cell().store_uint(0, 32);
   builder inner = null();
   int MAX_BITS = 1023;
   int total_len = result_bits.tlen();
   int chunk_num = total_len / MAX_BITS;
   while (chunk_num >= 0) {
-    b = begin_cell();
+    b = begin_cell().store_uint(0, 32);
     int i = chunk_num * MAX_BITS;
     while ( (i < (chunk_num + 1) * MAX_BITS) & (i < total_len) ) {
       b = b.store_uint(result_bits.at(i), 1);
