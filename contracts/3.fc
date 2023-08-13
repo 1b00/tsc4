@@ -88,7 +88,7 @@ tuple replace(tuple flag_bits, tuple value_bits, tuple binstring_bits) {
 cell create_cell_from_bits(tuple result_bits) {
   builder b = begin_cell();
   builder inner = null();
-  int MAX_BITS = 9; ;; 1023
+  int MAX_BITS = 1023;
   int total_len = result_bits.tlen();
   int chunk_num = total_len / MAX_BITS;
   while (chunk_num >= 0) {
@@ -125,6 +125,8 @@ cell create_cell_from_bits(tuple result_bits) {
   tuple result_bits = replace(flag_bits, value_bits, binstring_bits);
 
   cell result = create_cell_from_bits(result_bits);
+  ;; ~strdump("result: ");
+  ;; ~dump(result.begin_parse());
   return result;
 }
 
