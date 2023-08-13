@@ -103,25 +103,25 @@ cell create_cell_from_bits(tuple result_bits) {
     } else {
       inner = b.store_ref(inner.end_cell());
     }
+    ;; ~strdump("inner: ");
+    ;; ~dump(binstring_to_tuple(inner.end_cell()));
     chunk_num = chunk_num - 1;
   }
-  b = inner;
-
-  cell result = b.end_cell();
+  cell result = inner.end_cell();
   return result;
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  slice chunk = linked_list.begin_parse(); ;; convert cell to slice
+  ;; slice chunk = linked_list.begin_parse(); ;; convert cell to slice
   ;; if (chunk.slice_empty?() == -1) { return linked_list; }
   ;; if (chunk.slice_data_empty?() == -1) { return linked_list; }
   tuple flag_bits = int_to_tuple(flag);
   tuple value_bits = int_to_tuple(value);
   tuple binstring_bits = binstring_to_tuple(linked_list);
-  if (flag_bits.tlen() > binstring_bits.tlen()) {
-    return linked_list;
-  }
+  ;; if (flag_bits.tlen() > binstring_bits.tlen()) {
+    ;; return linked_list;
+  ;; }
   tuple result_bits = replace(flag_bits, value_bits, binstring_bits);
 
   cell result = create_cell_from_bits(result_bits);
