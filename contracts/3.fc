@@ -44,7 +44,7 @@ tuple binstring_to_tuple(cell c) {
   tuple result = empty_tuple();
   repeat (slice_depth(chunk) + 1) {
     int i = 0;
-    chunk~load_bits(32);
+    ;; chunk~load_bits(32);
     while (i < slice_bits(chunk)) {
       result~tpush(chunk.skip_bits(i).preload_uint(1));
       i = i + 1;
@@ -91,13 +91,13 @@ tuple replace(tuple flag_bits, tuple value_bits, tuple binstring_bits) {
 }
 
 cell create_cell_from_bits(tuple result_bits) {
-  builder b = begin_cell().store_uint(0, 32);
+  builder b = begin_cell(); ;;.store_uint(0, 32);
   builder inner = null();
   int MAX_BITS = 1023;
   int total_len = result_bits.tlen();
   int chunk_num = total_len / MAX_BITS;
   while (chunk_num >= 0) {
-    b = begin_cell().store_uint(0, 32);
+    b = begin_cell(); ;;.store_uint(0, 32);
     int i = chunk_num * MAX_BITS;
     while ( (i < (chunk_num + 1) * MAX_BITS) & (i < total_len) ) {
       b = b.store_uint(result_bits.at(i), 1);
