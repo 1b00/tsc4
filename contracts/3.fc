@@ -16,11 +16,257 @@
 
 -}
 
+;; Replacing a certain flag instance may create more or less instances of the flag.
+;;   So are we supposed to just start from the leftmost flag, replace it, and just consider the new string and repeat?
+;; - it should work as a common .replace() function in most programming languages (python, js and others)
+;; Also I found no answers about flag and value length(task 3)
+;;   Is it possible that they're different?
+;;   And we should obtain them by ignoring leading zeroes, right?
+;; - yes, right
+;; Struggling with #3. Do I need to handle flag and value of different sizes? What to do on cell edges then? Does it matter that value <= 128 bits - I don't use it anywhere
+;; - Yes, flag and value can have different sizes. If that happens on cell edges, you may either write value into the next cell fully or put whatever can fit into the first cell.
+;; - Oh, isn't it necessary that all of the output cells except maybe the last are full?
+;; in task 3, I assume, the flag  can only start with a '1', can't it?
+;; - Yes, same with value
+;; In task 3, does it correct approach of storing data:
+;;   .store_slice(«10101010101010110110»)
+;;   Or it must be converted to integer first? Or it must be hashed?
+;;   What actually «the binary string» means?
+;; In task 3 should the output of both enc and dec contain the 32 bit zero op flag?
+;;   Also should dec(enc(cell c)) = cell c?
+;; - Yes, both shall. Yes, decryption is the inverse of encryption.
+;; - https://docs.ton.org/develop/func/cookbook#how-to-send-a-message-with-a-long-text-comment
+;; for task 3, with, for example, flag == 5 and replacement value == 2 - should code replace 101 to 10 (and change resulting cell lengths/boundaries) or 101 to 010 (and keep original cell lengths and boundaries) ?
+;; - 101 -> 10
+;; In task 3 should I extract the binary characters bit by bit or byte by byte?
+;; - Bits
+;; 1. flag and value are in binary. - yes
+;; 2. flag and value are patterns and start from most significant bit and end at least significant bit.  - No, “to end”. For value 4 pattern is 100
+;; 3. there are no prefix zeros like in task4 - Correct
+;; 4. the result is a list of nonempty cells that concatenation is answer and the cell sizes doesnt matter - YES 4. Not sure. My solution makes full cells (1023)
+;; you cannot extend slice itself, but store both of slices to builder/cell is the solution
+;; beginCell()
+;;   .storeUint(0b1011n, 4)
+;;   .storeRef(
+;;     beginCell().storeUint(0b1011n, 4).endCell(),
+;;   ).endCell()
+;; If I replace 0b1011n to 0b111n, should I get 
+;; beginCell().storeUint(0b111111n, 6).endCell()
+;; or
+;; beginCell()
+;;   .storeUint(0b111n, 3)
+;;   .storeRef(
+;;     beginCell().storeUint(0b111n, 3).endCell(),
+;;   ).endCell()
+;; Should each cell train starts from flag 0xff? or 0x00? - no flags, no prefixes. just data bits.
+
+;; builder uint_to_string(builder b, int val) asm ""
+;;   "ZERO"
+;;   "SWAP" "TRUE"
+;;   "WHILE:<{"
+;;   "}>DO<{"
+;;     "10 PUSHINT" "DIVMOD"
+;;     "48 PUSHINT" "ADD"
+;;     "3 ROLLREV"
+;;     "SWAP" "INC"
+;;     "SWAP"
+;;     "DUP" "0 NEQINT"
+;;   "}>"
+;;   "DROP"
+;;   "REPEAT:<{"
+;;     "8 STU"
+;;   "}>"
+;; ;
+
+;; s0 = [1 0 1 0 0 0 1 0 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 0 1]
+;; s0 = [1 0   0 0 0 1 0   1 1 1 1 1 1 1 1 1 0   1 1 1 1 1 1 1 0  ]
+
+(int) tlen (tuple t) asm "TLEN";
+forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
+forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
+
 () recv_internal() {
+}
+
+tuple int_to_tuple(int num) {
+  tuple result = empty_tuple();
+  slice s = begin_cell().store_int(num, 32).end_cell().begin_parse();
+  int i = 0;
+  int skip_initial_zeros = -1;
+  while (i < slice_bits(s)) {
+    int bit = s.skip_bits(i).preload_uint(1);
+    if ( skip_initial_zeros & (bit == 1) ) { skip_initial_zeros = 0; }
+    ifnot (skip_initial_zeros) {
+      result~tpush(bit);
+    }
+    i = i + 1;
+  }
+  return result;
+}
+
+tuple binstring_to_tuple(cell c) {
+  slice chunk = c.begin_parse();
+  tuple result = empty_tuple();
+  repeat (slice_depth(chunk) + 1) {
+    int i = 0;
+    while (i < slice_bits(chunk)) {
+      result~tpush(chunk.skip_bits(i).preload_uint(1));
+      i = i + 1;
+    }
+    if (chunk.slice_refs()) {
+      chunk = chunk~load_ref().begin_parse();
+    }
+  }    
+  return result;
+}
+
+tuple replace(tuple flag_bits, tuple value_bits, tuple binstring_bits) {
+  tuple result = empty_tuple();
+  int total_len = binstring_bits.tlen();
+  int flag_len = flag_bits.tlen();
+  int value_len = value_bits.tlen();
+  int i = 0;
+  while (i < (total_len - flag_len + 1)) {
+    int found_count = 0;
+    int j = 0;
+    while (j < flag_len) {
+      if (binstring_bits.at(i + j) == flag_bits.at(j)) {
+        found_count = found_count + 1;
+      }
+      j = j + 1;
+    }
+    if (found_count == flag_len) {
+      int j = 0;
+      while (j < value_len) {
+        result~tpush(value_bits.at(j));
+        j = j + 1;
+      }
+      i = i + flag_len;
+    } else {
+      result~tpush(binstring_bits.at(i));
+      i = i + 1;
+    }
+  }
+  return result;
+}
+
+cell create_cell_from_bits(tuple result_bits) {
+  ;; tuple resulting_semicells = begin_cells_builder(0);
+  builder b = begin_cell();
+  builder inner = null();
+  int MAX_BITS = 9; ;; 1023
+  int total_len = result_bits.tlen();
+  ~strdump("total_len: ");
+  ~dump(total_len);
+  int chunk_num = total_len / MAX_BITS;
+  ~strdump("chunk_num: ");
+  ~dump(chunk_num);
+  while (chunk_num >= 0) {
+    b = begin_cell();
+    int i = chunk_num * MAX_BITS;
+    while ( (i < (chunk_num + 1) * MAX_BITS) & (i < total_len) ) {
+  ~strdump("i chunk_num: ");
+  ~dump(i);
+  ~dump(chunk_num);
+      b = b.store_uint(result_bits.at(i), 1);
+      i = i + 1;
+    }
+  ~strdump("b: ");
+  ~dump(b.end_cell().begin_parse());
+    if (chunk_num == total_len / MAX_BITS) {
+      inner = b;
+    } else {
+      inner = b.store_ref(inner.end_cell());
+    }
+  ~strdump("inner: ");
+  ~dump(inner.end_cell().begin_parse());
+    chunk_num = chunk_num - 1;
+  }
+  b = inner;
+  
+  ;; ~strdump("b: ");
+  ;; ~dump(b.end_cell().begin_parse());
+
+
+  ;; tuple resulting_cells = empty_tuple();
+  ;; ~strdump("resulting_semicells: ");
+  ;; ~dump(resulting_semicells);
+  ;; int result_len = result_bits.tlen();
+  ;; ~strdump("result_len: ");
+  ;; ~dump(result_len);
+  ;; int i = 0;
+  ;; int cell_num = 0;
+  ;; builder b = begin_cell().store_uint(0, 32);
+  ;; ~strdump("b: ");
+  ;; ~dump(b);
+  ;; ;; resulting_semicells~tpush(b);
+  ;; ~dump(resulting_semicells.at(0).end_cell());
+  ;; resulting_semicells.at(0).store_uint(7, 32);
+  ;; ~dump(resulting_semicells.at(0).store_uint(7, 32));
+  ;; ~dump(resulting_semicells.at(0));
+  ;; ;; resulting_semicells~tpush(begin_cell().store_uint(0, 32).end_cell());
+  ;; while (i < result_len) {
+  ;;   if (i % 9 == 0) {
+  ;;     resulting_semicells.at(cell_num).end_cell();
+  ;;     slice s = resulting_semicells.at(cell_num).begin_parse();
+  ;;     ~strdump("i cell_num s: ");
+  ;;     ~dump(i);
+  ;;     ~dump(cell_num);
+  ;;     ;; ~dump(s);
+  ;;     resulting_semicells~tpush(begin_cell().store_uint(0, 32).end_cell());
+  ;;     cell_num = cell_num + 1;
+  ;;   }
+  ;;   ;; resulting_semicells.at(cell_num).store_uint(result_bits.at(i), 1);
+  ;;   i = i + 1;
+  ;; }
+  ;; i = resulting_semicells.tlen() - 2;
+  ;; resulting_semicells.at(i + 1).end_cell();
+  ;; while (i > 0) {
+  ;;   resulting_semicells.at(i).store_ref(resulting_semicells.at(i + 1)).end_cell();
+  ;;   i = i - 1;
+  ;; }
+  ;; cell c = resulting_cells.at(0).end_cell();
+  ;; slice s = c.begin_parse();
+  cell result = b.end_cell();
+  slice s = result.begin_parse();
+  ~strdump("result: ");
+  ~dump(s);
+  ~dump(slice_depth(s));
+  ~dump(slice_bits(s));
+  ;; ~dump(result.begin_parse().preload_uint(25));
+  return result;
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  return begin_cell().end_cell();
+  ~strdump("flag: ");
+  ~dump(flag);
+  ~strdump("value: ");
+  ~dump(value);
+  ~strdump("linked_list: ");
+  ~dump(linked_list);
+  slice chunk = linked_list.begin_parse(); ;; convert cell to slice
+  ~strdump("chunk: ");
+  ~dump(chunk);
+  ;; if (chunk.slice_empty?() == -1) { return linked_list; }
+  ;; if (chunk.slice_data_empty?() == -1) { return linked_list; }
+  tuple flag_bits = int_to_tuple(flag);
+  ~strdump("flag_bits: ");
+  ~dump(flag_bits);
+  tuple value_bits = int_to_tuple(value);
+  ~strdump("value_bits: ");
+  ~dump(value_bits);
+  tuple binstring_bits = binstring_to_tuple(linked_list);
+  ~strdump("binstring_bits: ");
+  ~dump(binstring_bits);
+  if (flag_bits.tlen() > binstring_bits.tlen()) {
+    return linked_list;
+  }
+  tuple result_bits = replace(flag_bits, value_bits, binstring_bits);
+  ~strdump("result_bits: ");
+  ~dump(result_bits);
+
+  cell result = create_cell_from_bits(result_bits);
+  return result;
 }
 
