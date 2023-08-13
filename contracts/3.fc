@@ -120,24 +120,24 @@ cell create_cell_from_bits(tuple result_bits) {
   ;; if (chunk.slice_empty?() == -1) { return linked_list; }
   ;; if (chunk.slice_data_empty?() == -1) { return linked_list; }
   tuple flag_bits = int_to_tuple(flag);
-  ~strdump("flag_bits: ");
-  ~dump(flag_bits);
+  ;; ~strdump("flag_bits: ");
+  ;; ~dump(flag_bits);
   tuple value_bits = int_to_tuple(value);
-  ~strdump("value_bits: ");
-  ~dump(value_bits);
+  ;; ~strdump("value_bits: ");
+  ;; ~dump(value_bits);
   tuple binstring_bits = binstring_to_tuple(linked_list);
-  ~strdump("binstring_bits: ");
-  ~dump(binstring_bits);
+  ;; ~strdump("binstring_bits: ");
+  ;; ~dump(binstring_bits);
   ;; if (flag_bits.tlen() > binstring_bits.tlen()) {
     ;; return linked_list;
   ;; }
   tuple result_bits = replace(flag_bits, value_bits, binstring_bits);
-  ~strdump("result_bits: ");
-  ~dump(result_bits);
+  ;; ~strdump("result_bits: ");
+  ;; ~dump(result_bits);
 
   cell result = create_cell_from_bits(result_bits);
-  ~strdump("create_cell_from_bits: ");
-  ~dump(binstring_to_tuple(result));
+  ;; ~strdump("create_cell_from_bits: ");
+  ;; ~dump(binstring_to_tuple(result));
   return result;
 }
 
