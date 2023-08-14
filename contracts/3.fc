@@ -16,6 +16,9 @@
 
 -}
 
+;; If the first test crashes, the other ones won't be checked. And the first test might have quite large inputs, so try to run your solution on big input. This is a problem I had.
+
+
 (int) tlen (tuple t) asm "TLEN";
 forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
 forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
@@ -117,6 +120,7 @@ cell create_cell_from_bits(tuple result_bits) {
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+  return linked_list;
   ;; slice chunk = linked_list.begin_parse(); ;; convert cell to slice
   ;; if (chunk.slice_empty?() == -1) { return linked_list; }
   ;; if (chunk.slice_data_empty?() == -1) { return linked_list; }

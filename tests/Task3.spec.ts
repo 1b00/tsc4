@@ -104,13 +104,13 @@ describe('Task3', () => {
         tb.writeNumber(5)
         tb.writeNumber(6)
         tb.writeCell(
-            (new Builder()).storeUint(0b1010001010n, 10)
+            (new Builder()).storeUint(0b1010001010n, 1023)
             .storeRef(
-                (new Builder()).storeUint(0b111111101n, 9)
+                (new Builder()).storeUint(0b111111101n, 1023)
                 .storeRef(
-                    (new Builder()).storeUint(0b11111110n, 8)
+                    (new Builder()).storeUint(0b11111110n, 1023)
                     .storeRef(
-                        (new Builder()).storeUint(0b111111101n, 220)
+                        (new Builder()).storeUint(0b111111101n, 1023)
                     )
                 )
             )
