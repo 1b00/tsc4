@@ -24,8 +24,9 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 }
 
 tuple int_to_tuple(int num) {
+  int MAX_INT_BITS = 128;
   tuple result = empty_tuple();
-  slice s = begin_cell().store_int(num, 32).end_cell().begin_parse();
+  slice s = begin_cell().store_int(num, MAX_INT_BITS).end_cell().begin_parse();
   int i = 0;
   int skip_initial_zeros = -1;
   while (i < slice_bits(s)) {
@@ -93,17 +94,17 @@ tuple replace(tuple flag_bits, tuple value_bits, tuple binstring_bits) {
 cell create_cell_from_bits(tuple result_bits) {
   builder b = begin_cell(); ;;.store_uint(0, 32);
   builder inner = null();
-  int MAX_BITS = 1023;
+  int MAX_CELL_BITS = 1023;
   int total_len = result_bits.tlen();
-  int chunk_num = total_len / MAX_BITS;
+  int chunk_num = total_len / MAX_CELL_BITS;
   while (chunk_num >= 0) {
     b = begin_cell(); ;;.store_uint(0, 32);
-    int i = chunk_num * MAX_BITS;
-    while ( (i < (chunk_num + 1) * MAX_BITS) & (i < total_len) ) {
+    int i = chunk_num * MAX_CELL_BITS;
+    while ( (i < (chunk_num + 1) * MAX_CELL_BITS) & (i < total_len) ) {
       b = b.store_uint(result_bits.at(i), 1);
       i = i + 1;
     }
-    if (chunk_num == total_len / MAX_BITS) {
+    if (chunk_num == total_len / MAX_CELL_BITS) {
       inner = b;
     } else {
       inner = b.store_ref(inner.end_cell());
