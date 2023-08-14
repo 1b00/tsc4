@@ -18,7 +18,7 @@
 
 ;; If the first test crashes, the other ones won't be checked. And the first test might have quite large inputs, so try to run your solution on big input. This is a problem I had.
 
-
+(int) ubitsize (int num) asm "UBITSIZE";
 (int) tlen (tuple t) asm "TLEN";
 forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
 forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
@@ -94,6 +94,136 @@ tuple replace(tuple flag_bits, tuple value_bits, tuple binstring_bits) {
   return result;
 }
 
+tuple print_slice_bits(slice chunk) {
+  tuple result = empty_tuple();
+  int i = 0;
+  while (i < slice_bits(chunk)) {
+    result~tpush(chunk.skip_bits(i).preload_uint(1));
+    i = i + 1;
+  }
+  return result;
+}
+
+tuple binstring_to_chunks(cell c) {
+  slice chunk = c.begin_parse();
+  tuple result = empty_tuple();
+  tuple ch = empty_tuple();
+  ch~tpush(slice_bits(chunk)); ch~tpush(chunk);
+  result~tpush(ch);
+  while (chunk.slice_refs()) {
+    chunk = chunk~load_ref().begin_parse();
+    tuple ch = empty_tuple();
+    ch~tpush(slice_bits(chunk)); ch~tpush(chunk);
+    result~tpush(ch);
+  }    
+  return result;
+}
+
+cell replace_to_cell(int flag, int value, tuple binstring_chunks) {
+  builder result = begin_cell();
+  ;; tuple chunks_of_result = empty_tuple();
+  int total_len = 0;
+  int current_cell_bits = 0;
+  int i = 0;
+  while (i < binstring_chunks.tlen()) {
+    total_len += binstring_chunks.at(i).at(0);
+    ~strdump("print_slice_bits: ");
+    ~dump(print_slice_bits(binstring_chunks.at(i).at(1)));
+    i = i + 1;
+  }
+  ~strdump("total_len: ");
+  ~dump(total_len);
+  int flag_len = ubitsize(flag);
+  ~strdump("flag size: ");
+  ~dump(flag_len);
+  int value_len = ubitsize(value);
+  ~strdump("value size: ");
+  ~dump(value_len);
+  int i = 0;
+  int next_j = 0;
+  while (i < binstring_chunks.tlen()) {
+    int j = next_j;
+    next_j = 0;
+    while (j < binstring_chunks.at(i).at(0) - flag_len + 1) {
+      int needle = binstring_chunks.at(i).at(1).skip_bits(j).preload_uint(flag_len);
+      if (needle == flag) {
+        result = result.store_uint(value, value_len);
+        j = j + flag_len;
+      } else {
+        result = result.store_uint(binstring_chunks.at(i).at(1).skip_bits(j).preload_uint(1), 1);
+        j = j + 1;
+      }
+    }
+    if (i < binstring_chunks.tlen() - 1) {
+      int k = 0;
+      next_j = 0;
+      while (j < binstring_chunks.at(i).at(0)) & (k < binstring_chunks.at(i + 1).at(0)) {
+        int needle = binstring_chunks.at(i).at(1).skip_bits(j).preload_uint(flag_len - (k + 1)) << (k + 1);
+        needle += binstring_chunks.at(i + 1).at(1).skip_bits(k).preload_uint(k + 1);
+        ;; ~strdump("needle i j k: ");
+        ;; ~dump(needle);
+        ;; ~dump(i);
+        ;; ~dump(j);
+        ;; ~dump(k);
+        if (needle == flag) {
+          result = result.store_uint(value, value_len);
+          j = j + flag_len;
+          next_j = k + 1;
+        } else {
+          result = result.store_uint(binstring_chunks.at(i).at(1).skip_bits(j).preload_uint(1), 1);
+          k = k + 1;
+          j = j + 1;
+        }
+      }
+    } else {
+      int tail_bits = binstring_chunks.at(i).at(0) - j;
+      ;; ~strdump("j: ");
+      ;; ~dump(j);
+      ;; ~dump(tail_bits);
+      result = result.store_uint(binstring_chunks.at(i).at(1).skip_bits(j).preload_uint(tail_bits), tail_bits);
+      ;; while (j < binstring_chunks.at(i).at(0)) {
+      ;;   result = result.store_uint(binstring_chunks.at(i).at(1).skip_bits(j).preload_uint(1), 1); ;; {--}
+      ;;   j = j + 1;
+      ;; }
+    }
+    ~strdump("i result: ");
+    ~dump(i);
+    ~dump(print_slice_bits(result.end_cell().begin_parse()));
+    i = i + 1;
+  }
+  ~strdump("result: ");
+  ~dump(print_slice_bits(result.end_cell().begin_parse()));
+
+  return result.end_cell();
+
+  ;; while (i < (total_len - flag_len + 1)) {
+  ;;   int found_count = 0;
+  ;;   int j = 0;
+  ;;   while (j < flag_len) {
+  ;;     if (binstring_chunks.at(i + j) == flag_bits.at(j)) {
+  ;;       found_count = found_count + 1;
+  ;;     }
+  ;;     j = j + 1;
+  ;;   }
+  ;;   if (found_count == flag_len) {
+  ;;     int j = 0;
+  ;;     while (j < value_len) {
+  ;;       chunks_of_result~tpush(value_bits.at(j));
+  ;;       j = j + 1;
+  ;;     }
+  ;;     i = i + flag_len;
+  ;;   } else {
+  ;;     chunks_of_result~tpush(binstring_chunks.at(i));
+  ;;     i = i + 1;
+  ;;   }
+  ;; }
+  ;; while (i < total_len) {
+  ;;   chunks_of_result~tpush(binstring_chunks.at(i));
+  ;;   i = i + 1;
+  ;; }
+  ;; return result.end_cell();
+}
+
 cell create_cell_from_bits(tuple result_bits) {
   builder b = begin_cell(); ;;.store_uint(0, 32);
   builder inner = null();
@@ -120,29 +250,38 @@ cell create_cell_from_bits(tuple result_bits) {
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  return linked_list;
+  ;; tuple chunks = empty_tuple();
   ;; slice chunk = linked_list.begin_parse(); ;; convert cell to slice
+  
   ;; if (chunk.slice_empty?() == -1) { return linked_list; }
   ;; if (chunk.slice_data_empty?() == -1) { return linked_list; }
   tuple flag_bits = int_to_tuple(flag);
-  ;; ~strdump("flag_bits: ");
-  ;; ~dump(flag_bits);
+  ~strdump("flag_bits: ");
+  ~dump(flag_bits);
   tuple value_bits = int_to_tuple(value);
-  ;; ~strdump("value_bits: ");
-  ;; ~dump(value_bits);
-  tuple binstring_bits = binstring_to_tuple(linked_list);
+  ~strdump("value_bits: ");
+  ~dump(value_bits);
+  tuple binstring_chunks = binstring_to_chunks(linked_list);
+  ~strdump("binstring_chunks: ");
+  ~dump(binstring_chunks);
+  cell result = replace_to_cell(flag, value, binstring_chunks);
+  ~strdump("result: ");
+  ~dump(binstring_to_chunks(result));
+
+  ;; tuple binstring_bits = binstring_to_tuple(linked_list);
   ;; ~strdump("binstring_bits: ");
   ;; ~dump(binstring_bits);
   ;; if (flag_bits.tlen() > binstring_bits.tlen()) {
     ;; return linked_list;
   ;; }
-  tuple result_bits = replace(flag_bits, value_bits, binstring_bits);
+  ;; tuple result_bits = replace(flag_bits, value_bits, binstring_bits);
   ;; ~strdump("result_bits: ");
   ;; ~dump(result_bits);
 
-  cell result = create_cell_from_bits(result_bits);
+  ;; cell result = create_cell_from_bits(result_bits);
   ;; ~strdump("create_cell_from_bits: ");
   ;; ~dump(binstring_to_tuple(result));
+  ;; cell result = begin_cell().end_cell();
   return result;
 }
 
