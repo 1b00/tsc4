@@ -46,20 +46,22 @@ describe('Task3', () => {
 // [1 0 1 0 0 0 1 0 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 1]
 // [1 0 1 0 0 0 1 0 1 0 1 0 1 0 0 1 0 1 0 1 1 0 1 0 1 0 1 0 1]
 // [1 0 1 0 0 0 1 0 1 0 1 0 1 0 0 1 0 1 0 1 1 0 1 0 1 0 1 0 1]
+// [1 0 1 0 0 0 1 0 1 0 1 0 1 0 0 1 0 1 0 1 1 0 1 0 1 0 1 0 1]
+
     it('flag lt value', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to use
         const tb = new TupleBuilder()
-        tb.writeNumber(7)
-        tb.writeNumber(2)
+        tb.writeNumber(1)
+        tb.writeNumber(26540665054)
         tb.writeCell(
-            (new Builder()).storeUint(0b1010001011, 10)
+            (new Builder()).storeUint(0b1010001011, 1023)
             .storeRef(
-                (new Builder()).storeUint(0b111111101, 9)
+                (new Builder()).storeUint(0b111111101, 1023)
                 .storeRef(
-                    (new Builder()).storeUint(0b11111110, 8)
+                    (new Builder()).storeUint(0b11111110, 1023)
                     .storeRef(
-                        (new Builder()).storeUint(0b111111101, 9)
+                        (new Builder()).storeUint(0b111111101, 1023)
                     )
                 )
             )
