@@ -40,7 +40,7 @@ describe('Task4', () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to use
         const tb = new TupleBuilder();
-        tb.writeNumber(-1);
+        tb.writeNumber(-126);
         // tb.writeCell(
         //     (new Builder()).storeUint(108, 32)
         //     // .storeUint(0x48656C6C6F2C20576F726C64212121, 120)
