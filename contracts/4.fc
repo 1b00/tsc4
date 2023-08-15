@@ -38,16 +38,16 @@
 ;; No, from 0 to 255, but Latin from 32 to 126. Note, that lower and upper cases must be handled separatelly
 ;; Don't misguide other participants. Latin are from 65 to 90 for uppercase and from 97 to 122 for lowercase.
 
+;; GasValue: 364424013
+;; Points: 5.619197559295318
+
 () recv_internal() {
 }
 
 (cell) caesar_cipher(int shift, cell text) {
-  int LETTERS = 26;
-  shift = shift % LETTERS;
-  if (shift == 0) { return text; }
   slice text_s = text.begin_parse();
   int DEPTH = slice_depth(text_s);
-  builder result = begin_cell();
+  builder result = null();
   int i = 0;
   while (i <= DEPTH) {
     int ref_count = DEPTH;
@@ -63,13 +63,11 @@
     repeat (slice_bits(s) / 8) {
       int char = s~load_uint(8);
       if (char >= 65) & (char <= 90) {
-        ;; char = ((char + shift - 65) % LETTERS + 65);
         char = char + shift;
-        if (char > 90) { char = char - LETTERS; }
+        if (char > 90) { char = char - 26; }
       } elseif (char >= 97) & (char <= 122) {
-        ;; char = ((char + shift - 97) % LETTERS + 97);
         char = char + shift;
-        if (char > 122) { char = char - LETTERS; }
+        if (char > 122) { char = char - 26; }
       }
       tmp = tmp.store_uint(char, 8);
     }
@@ -85,7 +83,7 @@
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return caesar_cipher(shift, text);
+  return caesar_cipher(shift % 26, text);
 }
 
 ;; testable
