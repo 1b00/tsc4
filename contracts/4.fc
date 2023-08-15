@@ -6,16 +6,97 @@
   character should go to the beginning. Return new text encoded in cell.
 -}
 
+;; only work with a-zA-Z letters. all the other ones should be ignored.
+;; Yes, put 32 bits in beginning of result.
+;; ASCII characters are 8 bit
+;; Caesar cipher text can be split across different cells or only one cell? - yes. Take a look at the link in the task description
+;; Case remains the same. For example: x -> a
+;; How to receive one character from slice?
+;; - ~load_uint(8)
+;; int bit = tSlice~load_uint(8);
+;; body~store_uint(bit, 8);
+;; 1- Does the input of enc have 32 bits 0 prefix? - yes
+;; 2- Does the input of dec have 32 bits 0 prefix? - yes
+;; 3- Does the output of enc have 32 bits 0 prefix? - yes
+;; 4- Does the output of dec have 32 bits 0 prefix? - yes
+;; Is the entire message in one cell? - NO
+;; ASCII is from 0 to 255.Only letters .
+;; my problem was that i stored all my references in a tuple and in some cases it overflowed
+;; The correct statement would sound as follows:
+;;   The input is a string (https://docs.ton.org/develop/smart-contracts/guidelines/internal-messages#simple-message-with-comment)
+;;   where the text is encrypted in a cell (after 32bit 00000000 prefix flag), the algorithm rotates the alphabet so that the last ASCII
+;;   character (Z) should go to the beginning (C). Return new text encoded in cell with the same x{00000000} prefix flag.
+;;  - Thanks a lot for clarification! But why C is at the beginning? Shouldnt it be A??
+;; 3. there are no prefix zeros like in task4 - Correct
+;; you can’t store a char in different cells
+;;
+;; tuple list_of_cells = empty_tuple();
+;; list_of_cells~cons(cell1);
+;; list_of_cells~cons(cell2);
+;; ;; reading it
+;; list_of_cells~list_next();
+;; No, from 0 to 255, but Latin from 32 to 126. Note, that lower and upper cases must be handled separatelly
+;; Don't misguide other participants. Latin are from 65 to 90 for uppercase and from 97 to 122 for lowercase.
+
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
 () recv_internal() {
+}
+
+(cell) caesar_cipher(int shift, cell text) {
+  int LETTERS = 26;
+  shift = shift % LETTERS;
+  if (shift < 0) { shift = shift + LETTERS; }
+
+  int first_slice = -1;
+  tuple output = null();
+  tuple input = null();
+  input~push_back(text);
+  while (~ input.is_null()) {
+    slice s = input~pop_back().begin_parse();
+    builder result = begin_cell();
+    if (first_slice) {
+      int op = s~load_uint(32);
+      result = result.store_uint(op, 32);
+      first_slice = 0;
+    }
+    repeat (slice_bits(s) / 8) {
+      int char = s~load_uint(8);
+      ;; ~strdump("char");
+      ;; ~dump(char);
+      if (char >= 65) & (char <= 90) {
+        char = char + shift;
+        if (char > 90) { char = char - LETTERS; }
+      } elseif (char >= 97) & (char <= 122) {
+        char = char + shift;
+        if (char > 122) { char = char - LETTERS; }
+      }
+      ;; ~strdump("new char");
+      ;; ~dump(char);
+      result = result.store_uint(char, 8);
+    }
+    output~push_back(result);
+
+    if (s.slice_refs()) {
+        input~push_back(s~load_ref());
+    }
+  }
+  builder result = output~pop_back();
+  while (~ output.is_null()) {
+    result = output~pop_back().store_ref(result.end_cell());
+  }
+  return result.end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  return caesar_cipher(shift, text);
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  return caesar_cipher(shift, text);
 }
 

@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import { Builder, Cell, TupleBuilder, toNano } from 'ton-core';
 import { Task4 } from '../wrappers/Task4';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -34,5 +34,43 @@ describe('Task4', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task4 are ready to use
+    });
+
+    it('shift check', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to use
+        const tb = new TupleBuilder();
+        tb.writeNumber(-1);
+        // tb.writeCell(
+        //     (new Builder()).storeUint(108, 32)
+        //     // .storeUint(0x48656C6C6F2C20576F726C64212121, 120)
+        //     .storeStringTail('Hello, World!!!')
+        //     .asCell()
+        // );
+        tb.writeCell(
+            (new Builder()).storeUint(0x0, 32).storeStringTail('Hello, World!!!')
+            .storeRef(
+                (new Builder()).storeStringTail('Hello, World!!!')
+                .storeRef(
+                    (new Builder()).storeStringTail('Hello, World!!!')
+                    .storeRef(
+                        (new Builder()).storeUint(0b11111110, 8)
+                    )
+                )
+            )
+            .asCell()
+        )
+
+        // let exp = tb.writeCell
+
+        const r = await blockchain.runGetMethod(task4.address, "caesar_cipher_encrypt", tb.build())
+
+        let rc = r.stackReader.readCell()
+        console.log("gasUsed: ", r.gasUsed.toString())
+        console.log("readCell: ", rc.toString())
+        // let op = rc.beginParse().loadUint(32);
+        // console.log("loadBits: ", op.toString())
+
+        // expect(op).toBe(108)
     });
 });
