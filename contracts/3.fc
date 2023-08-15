@@ -94,15 +94,15 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 ;;   return result;
 ;; }
 
-tuple print_slice_bits(slice chunk) {
-  tuple result = empty_tuple();
-  int i = 0;
-  while (i < slice_bits(chunk)) {
-    result~tpush(chunk.skip_bits(i).preload_uint(1));
-    i = i + 1;
-  }
-  return result;
-}
+;; tuple print_slice_bits(slice chunk) {
+;;   tuple result = empty_tuple();
+;;   int i = 0;
+;;   while (i < slice_bits(chunk)) {
+;;     result~tpush(chunk.skip_bits(i).preload_uint(1));
+;;     i = i + 1;
+;;   }
+;;   return result;
+;; }
 
 tuple binstring_to_chunks(cell c) {
   slice chunk = c.begin_parse();
@@ -128,7 +128,7 @@ cell replace_to_cell(int flag, int value, tuple binstring_chunks) {
   int i = 0;
   while (i < binstring_chunks.tlen()) {
     total_len += binstring_chunks.at(i).at(0);
-    ~strdump("print_slice_bits: ");
+    ;; ~strdump("print_slice_bits: ");
     ;; ~dump(print_slice_bits(binstring_chunks.at(i).at(1)));
     i = i + 1;
   }
@@ -175,11 +175,11 @@ cell replace_to_cell(int flag, int value, tuple binstring_chunks) {
         int gap = binstring_chunks.at(i).at(0) - j;
         int needle = binstring_chunks.at(i).at(1).skip_bits(j).preload_uint(gap) << (flag_len - gap);
         needle += binstring_chunks.at(i + 1).at(1).preload_uint(flag_len - gap);
-        ~strdump("needle i j k: ");
-        ~dump(needle);
-        ~dump(i);
-        ~dump(j);
-        ~dump(k);
+        ;; ~strdump("needle i j k: ");
+        ;; ~dump(needle);
+        ;; ~dump(i);
+        ;; ~dump(j);
+        ;; ~dump(k);
         if (needle == flag) {
           if (current_cell_bits + value_len > MAX_CELL_BITS) {
             chunks_of_result~tpush(result);
@@ -227,8 +227,8 @@ cell replace_to_cell(int flag, int value, tuple binstring_chunks) {
       ;; }
     ;; }
     
-    ~strdump("i result: ");
-    ~dump(i);
+    ;; ~strdump("i result: ");
+    ;; ~dump(i);
     ;; ~dump(print_slice_bits(result.end_cell().begin_parse()));
     i = i + 1;
   }
@@ -237,16 +237,16 @@ cell replace_to_cell(int flag, int value, tuple binstring_chunks) {
   cell c = chunks_of_result.at(chunks_of_result.tlen() - 1).end_cell();
 
   int i = chunks_of_result.tlen() - 2;
-  ~strdump("chunks_of_result: ");
+  ;; ~strdump("chunks_of_result: ");
   while (i >= 0) {
-    ~strdump("i: ");
-    ~dump(i);
+    ;; ~strdump("i: ");
+    ;; ~dump(i);
     ;; ~dump(print_slice_bits(chunks_of_result.at(i).end_cell().begin_parse()));
     c = chunks_of_result.at(i).store_ref(c).end_cell();
     i = i - 1;
   }
 
-  ~strdump("result: ");
+  ;; ~strdump("result: ");
   ;; ~dump(print_slice_bits(result.end_cell().begin_parse()));
   ;; result =
 
