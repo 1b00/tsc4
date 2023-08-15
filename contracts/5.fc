@@ -13,47 +13,30 @@
   1923063428480944139667114773918309212080528]
 -}
 
-;; empty tuple is null() or empty_tuple()? - Second
-;; How suppose check restrictions `(0<=N<=370; 0<=N+K<=370; 0<=K<=255)`? Must it throw or return empty tuple? - no need
-;; k = 0? empty tuple? - Just try it. It's part of the challenge 😉 - yeap
-;; dude i spent like 5 hrs on that, fib(370) overflows the 256-bit integer, so make sure u arent calculating 370 directly,
-;;   like the biggest number u should store is fib(369). also if it still bugs after, then just rewrite ur code with more sleep.
-;;   cuz i failed for hrs afterwards, then i just decided to rewrite and it just worked and i still have 0 idea why
-;; - Sory, I think you are wrong. Just make sure, that edge cases are correct
-;; - wait yeah sry ur right, its 371
-;; Limit in fibonacci sequence is 371. TVM integer limit is 2**256 = 1.157920892373162e+77 but fibonacci(371n) = 1.5308390447535E+77, which is alraedy larger, than the limit, so I keep getting exit_code=4.
-;;   Am I doing something wrong or the limit should be 0<=N+K<371 instead of 0<=N+K<=371?
-;; - N <= 370
-;;   N + K <= 371
-;;   N = 370, K = 1 means to return just [F370]
-;; tuple solve(int n, int k) asm """
-;;     // asm code
-;; """
-
-;; ;; testable
-;; tuple fibonacci_sequence(int n, int k) method_id {
-;;     return solve(n, k);
-;; }
-
 forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
-forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 () recv_internal() {
 }
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  tuple result = null();
-  if (k == 0) { return result; }
-  ;; int f = 0;
-  ;; if (n == 0) & (k > 1)
-  ;; int s = 1;
-  ;; int t = f + s;
-  ;; int i = 0;
-  ;; while (i < n) {
-  ;;   i = i + 1;
-  ;; }
-  return null();
+  tuple result = empty_tuple();
+  int i = 0;
+  int f = 0;
+  if (i == n) { result~tpush(f); k -= 1; n += 1; if (k == 0) { return result; } } i = i + 1;
+  int s = 1;
+  if (i >= n) { result~tpush(s); k -= 1; n += 1; if (k == 0) { return result; } } i = i + 1;
+  int t = f + s;
+  if (i >= n) { result~tpush(t); k -= 1; n += 1; if (k == 0) { return result; } } i = i + 1;
+  while (i < n) & (i < 371) {
+    f = s; s = t; t = f + s;
+    i = i + 1;
+  }
+  while (i < n + k) & (k < 256) {
+    f = s; s = t; t = f + s;
+    result~tpush(t);
+    i = i + 1;
+  }
+  return result;
 }
 
