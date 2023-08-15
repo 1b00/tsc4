@@ -58,7 +58,7 @@
     builder tmp = begin_cell();
     if (ref_count == i) {
       int op = s~load_uint(32);
-      tmp = tmp.store_uint(op, 32);      
+      ;; tmp = tmp.store_uint(op, 32);      
     }
     repeat (slice_bits(s) / 8) {
       int char = s~load_uint(8);
