@@ -40,6 +40,8 @@
 
 ;; GasValue: 364424013
 ;; Points: 5.619197559295318
+;; GasValue: 366932710
+;; Points: 5.61715775004039
 
 () recv_internal() {
 }
@@ -47,7 +49,7 @@
 (cell) caesar_cipher(int shift, cell text) {
   slice text_s = text.begin_parse();
   int DEPTH = slice_depth(text_s);
-  builder result = null();
+  builder result = begin_cell();
   int i = 0;
   while (i <= DEPTH) {
     int ref_count = DEPTH;
