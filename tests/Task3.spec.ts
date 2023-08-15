@@ -152,6 +152,8 @@ describe('Task3', () => {
     // [10100010101001000100001011111100110010101110001101010010101010001000010111111001100111111101]
 
     // [1010001010100100010000101111110011001010111000110101001010101000100001011111100110001010111111101]
+    // [1010001010100100010000101111110011001010111000110101001010101000100001011111100110001010111111101]
+    // 1010001010100100010000101111110011001010111000110101001010101000100001011111100110001010111111101]
 
     it('flag lt value', async () => {
         // the check is done inside beforeEach
@@ -182,6 +184,40 @@ describe('Task3', () => {
         console.log("readCell: ", rc.toString())
     });
     
+    // 101000101010010001000010111111001100010110101110001101010010101011000100001011111100110001010110111111101
+    // 10100010101001111111010101110100110101010101101011100011010100101010111111110101011101001101010101010110111111101
+    // 10100010101001111111010101110100110101010101101011100011010100101010111111110101011101001101010101010110111111101
+    // 10100010101001111111010101110100110101010101101011100011010100101010111111110101011101001101010101010110111111101
+
+    it('flag lt value', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to use
+        const tb = new TupleBuilder()
+        tb.writeNumber(4468684) // 10001000010111111001100
+        tb.writeNumber(133526741) // 111111101010111010011010101
+        tb.writeCell(
+            (new Builder()).storeUint(0b10100010101001000100001011111100, 32)
+            .storeRef(
+                (new Builder()).storeUint(0b11000101101011100011010100101010, 32)
+                .storeRef(
+                    (new Builder()).storeUint(0b11000100001011111100110001010110, 32)
+                    .storeRef(
+                        (new Builder()).storeUint(0b111111101, 9)
+                    )
+                )
+            )
+            .asCell()
+        )
+
+        // let exp = tb.writeCell
+
+        const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+        let rc = r.stackReader.readCell()
+        console.log("gasUsed: ", r.gasUsed.toString())
+        console.log("readCell: ", rc.toString())
+    });
+
 
     // it('flag lt value', async () => {
     //     // the check is done inside beforeEach
