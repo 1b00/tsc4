@@ -15,6 +15,8 @@
 
 ;; GasValue: 2481151
 ;; Points: 5.295680971283039
+;; GasValue: 942234
+;; Points: 5.629566442602379
 
 forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 
@@ -34,7 +36,6 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
   repeat (k    ) { f = s; s = t; t = f + s;
     result~tpush(t);
   }
-  ~dump(result);
   return result;
 }
 
