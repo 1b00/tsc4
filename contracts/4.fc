@@ -63,13 +63,13 @@
     repeat (slice_bits(s) / 8) {
       int char = s~load_uint(8);
       if (char >= 65) & (char <= 90) {
-        char = ((char + shift - 65) % LETTERS + 65);
-        ;; char = char + shift;
-        ;; if (char > 90) { char = char - LETTERS; }
+        ;; char = ((char + shift - 65) % LETTERS + 65);
+        char = char + shift;
+        if (char > 90) { char = char - LETTERS; }
       } elseif (char >= 97) & (char <= 122) {
-        char = ((char + shift - 97) % LETTERS + 97);
-        ;; char = char + shift;
-        ;; if (char > 122) { char = char - LETTERS; }
+        ;; char = ((char + shift - 97) % LETTERS + 97);
+        char = char + shift;
+        if (char > 122) { char = char - LETTERS; }
       }
       tmp = tmp.store_uint(char, 8);
     }
@@ -90,6 +90,6 @@
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return caesar_cipher(shift, text);
+  return caesar_cipher(26 - shift % 26, text);
 }
 
