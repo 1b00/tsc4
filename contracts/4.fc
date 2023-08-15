@@ -58,17 +58,18 @@
     builder tmp = begin_cell();
     if (ref_count == i) {
       int op = s~load_uint(32);
-      if (op != 0) { return text; }
       tmp = tmp.store_uint(op, 32);      
     }
     repeat (slice_bits(s) / 8) {
       int char = s~load_uint(8);
       if (char >= 65) & (char <= 90) {
-        char = char + shift;
-        if (char > 90) { char = char - LETTERS; }
+        char = ((char + shift - 65) % LETTERS + 65);
+        ;; char = char + shift;
+        ;; if (char > 90) { char = char - LETTERS; }
       } elseif (char >= 97) & (char <= 122) {
-        char = char + shift;
-        if (char > 122) { char = char - LETTERS; }
+        char = ((char + shift - 97) % LETTERS + 97);
+        ;; char = char + shift;
+        ;; if (char > 122) { char = char - LETTERS; }
       }
       tmp = tmp.store_uint(char, 8);
     }
