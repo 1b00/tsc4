@@ -170,9 +170,11 @@ cell replace_to_cell(int flag, int value, tuple binstring_chunks) {
     if (i < binstring_chunks.tlen() - 1) {
       int k = 0;
       next_j = 0;
-      while (j < binstring_chunks.at(i).at(0)) & (k < binstring_chunks.at(i + 1).at(0)) {
-        int needle = binstring_chunks.at(i).at(1).skip_bits(j).preload_uint(flag_len - (k + 1)) << (k + 1);
-        needle += binstring_chunks.at(i + 1).at(1).skip_bits(k).preload_uint(k + 1);
+      while (j < binstring_chunks.at(i).at(0)) & (k < binstring_chunks.at(i + 1).at(0))
+              & (flag_len - (binstring_chunks.at(i).at(0) - j) < binstring_chunks.at(i + 1).at(0)) {
+        int gap = binstring_chunks.at(i).at(0) - j;
+        int needle = binstring_chunks.at(i).at(1).skip_bits(j).preload_uint(gap) << (flag_len - gap);
+        needle += binstring_chunks.at(i + 1).at(1).preload_uint(flag_len - gap);
         ;; ~strdump("needle i j k: ");
         ;; ~dump(needle);
         ;; ~dump(i);

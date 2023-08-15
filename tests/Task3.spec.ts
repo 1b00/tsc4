@@ -48,18 +48,117 @@ describe('Task3', () => {
 // [1 0 1 0 0 0 1 0 1 0 1 0 1 0 0 1 0 1 0 1 1 0 1 0 1 0 1 0 1]
 // [1 0 1 0 0 0 1 0 1 0 1 0 1 0 0 1 0 1 0 1 1 0 1 0 1 0 1 0 1]
 
+// [1 0 1 0 0 0 1 0 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 1]
+// [1 0 1 0 0 0 1 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 1 0 0 1 0 0 1 0 0 1 0 0 0 1 0 0 1 0 0 1 0 0 1 0 1]
+// [1 0 1 0 0 0 1 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 1 0 0 1 0 0 1 0 0 1 0 0 0 1 0 0 1 0 0 1 0 0 1 0 1]
+
+
+    // it('flag lt value', async () => {
+    //     // the check is done inside beforeEach
+    //     // blockchain and task3 are ready to use
+    //     const tb = new TupleBuilder()
+    //     tb.writeNumber(2)
+    //     tb.writeNumber(4)
+    //     tb.writeCell(
+    //         (new Builder()).storeUint(0b1010001011, 10)
+    //         .storeRef(
+    //             (new Builder()).storeUint(0b111111101, 9)
+    //             .storeRef(
+    //                 (new Builder()).storeUint(0b11111110, 8)
+    //                 .storeRef(
+    //                     (new Builder()).storeUint(0b111111101, 9)
+    //                 )
+    //             )
+    //         )
+    //         .asCell()
+    //     )
+
+    //     // let exp = tb.writeCell
+
+    //     const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+    //     let rc = r.stackReader.readCell()
+    //     console.log("gasUsed: ", r.gasUsed.toString())
+    //     console.log("readCell: ", rc.toString())
+    // });
+
+    // it('flag lt value', async () => {
+    //     // the check is done inside beforeEach
+    //     // blockchain and task3 are ready to use
+    //     const tb = new TupleBuilder()
+    //     tb.writeNumber(3)
+    //     tb.writeNumber(4)
+    //     tb.writeCell(
+    //         (new Builder()).storeUint(0b1010001011, 10)
+    //         .storeRef(
+    //             (new Builder()).storeUint(0b111111101, 9)
+    //             .storeRef(
+    //                 (new Builder()).storeUint(0b11111110, 8)
+    //                 .storeRef(
+    //                     (new Builder()).storeUint(0b111111101, 9)
+    //                 )
+    //             )
+    //         )
+    //         .asCell()
+    //     )
+
+    //     // let exp = tb.writeCell
+
+    //     const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+    //     let rc = r.stackReader.readCell()
+    //     console.log("gasUsed: ", r.gasUsed.toString())
+    //     console.log("readCell: ", rc.toString())
+    // });
+
+    // it('flag lt value', async () => {
+    //     // the check is done inside beforeEach
+    //     // blockchain and task3 are ready to use
+    //     const tb = new TupleBuilder()
+    //     tb.writeNumber(4)
+    //     tb.writeNumber(4)
+    //     tb.writeCell(
+    //         (new Builder()).storeUint(0b1010001011, 10)
+    //         .storeRef(
+    //             (new Builder()).storeUint(0b111111101, 9)
+    //             .storeRef(
+    //                 (new Builder()).storeUint(0b11111110, 8)
+    //                 .storeRef(
+    //                     (new Builder()).storeUint(0b111111101, 9)
+    //                 )
+    //             )
+    //         )
+    //         .asCell()
+    //     )
+
+    //     // let exp = tb.writeCell
+
+    //     const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+    //     let rc = r.stackReader.readCell()
+    //     console.log("gasUsed: ", r.gasUsed.toString())
+    //     console.log("readCell: ", rc.toString())
+    // });
+
+    // [1 0 1 0 0 0 1 0 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 1]
+    // [1 0 0 0 0 0 1 0 0 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 0 0]
+    // [1 0 0 0 0 0 1 0 0 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 0 0]
+    // [1 0 1 0 0 0 1 0 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 1]
+    // [1 0 1 0 0 0 1 0 1 0 0 1 0 0 1 0 1 0 0 1 0 0 0 1 0 0 1 1 1 0 1]
+    // [1 0 1 0 0 0 1 0 1 0 0 1 0 0 1 0 1 0 0 1 0 0 0 1 0 0 1 1 1 0 1]
+
     it('flag lt value', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to use
         const tb = new TupleBuilder()
-        tb.writeNumber(1)
-        tb.writeNumber(26540665054)
+        tb.writeNumber(133526741)
+        tb.writeNumber(4468684)
         tb.writeCell(
             (new Builder()).storeUint(0b1010001011, 1023)
             .storeRef(
                 (new Builder()).storeUint(0b111111101, 1023)
                 .storeRef(
-                    (new Builder()).storeUint(0b11111110, 1023)
+                    (new Builder()).storeUint(0b1111111010101110100110101010101010, 1023)
                     .storeRef(
                         (new Builder()).storeUint(0b111111101, 1023)
                     )
@@ -76,7 +175,155 @@ describe('Task3', () => {
         console.log("gasUsed: ", r.gasUsed.toString())
         console.log("readCell: ", rc.toString())
     });
+    
 
+    // it('flag lt value', async () => {
+    //     // the check is done inside beforeEach
+    //     // blockchain and task3 are ready to use
+    //     const tb = new TupleBuilder()
+    //     tb.writeNumber(6)
+    //     tb.writeNumber(4)
+    //     tb.writeCell(
+    //         (new Builder()).storeUint(0b1010001011, 10)
+    //         .storeRef(
+    //             (new Builder()).storeUint(0b111111101, 9)
+    //             .storeRef(
+    //                 (new Builder()).storeUint(0b11111110, 8)
+    //                 .storeRef(
+    //                     (new Builder()).storeUint(0b111111101, 9)
+    //                 )
+    //             )
+    //         )
+    //         .asCell()
+    //     )
+
+    //     // let exp = tb.writeCell
+
+    //     const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+    //     let rc = r.stackReader.readCell()
+    //     console.log("gasUsed: ", r.gasUsed.toString())
+    //     console.log("readCell: ", rc.toString())
+    // });
+
+    // it('flag lt value', async () => {
+    //     // the check is done inside beforeEach
+    //     // blockchain and task3 are ready to use
+    //     const tb = new TupleBuilder()
+    //     tb.writeNumber(7)
+    //     tb.writeNumber(4)
+    //     tb.writeCell(
+    //         (new Builder()).storeUint(0b1010001011, 10)
+    //         .storeRef(
+    //             (new Builder()).storeUint(0b111111101, 9)
+    //             .storeRef(
+    //                 (new Builder()).storeUint(0b11111110, 8)
+    //                 .storeRef(
+    //                     (new Builder()).storeUint(0b111111101, 9)
+    //                 )
+    //             )
+    //         )
+    //         .asCell()
+    //     )
+
+    //     // let exp = tb.writeCell
+
+    //     const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+    //     let rc = r.stackReader.readCell()
+    //     console.log("gasUsed: ", r.gasUsed.toString())
+    //     console.log("readCell: ", rc.toString())
+    // });
+
+
+    // it('flag lt value', async () => {
+    //     // the check is done inside beforeEach
+    //     // blockchain and task3 are ready to use
+    //     const tb = new TupleBuilder()
+    //     tb.writeNumber(8)
+    //     tb.writeNumber(4)
+    //     tb.writeCell(
+    //         (new Builder()).storeUint(0b1010001011, 10)
+    //         .storeRef(
+    //             (new Builder()).storeUint(0b111111101, 9)
+    //             .storeRef(
+    //                 (new Builder()).storeUint(0b11111110, 8)
+    //                 .storeRef(
+    //                     (new Builder()).storeUint(0b111111101, 9)
+    //                 )
+    //             )
+    //         )
+    //         .asCell()
+    //     )
+
+    //     // let exp = tb.writeCell
+
+    //     const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+    //     let rc = r.stackReader.readCell()
+    //     console.log("gasUsed: ", r.gasUsed.toString())
+    //     console.log("readCell: ", rc.toString())
+    // });
+
+
+    // it('flag lt value', async () => {
+    //     // the check is done inside beforeEach
+    //     // blockchain and task3 are ready to use
+    //     const tb = new TupleBuilder()
+    //     tb.writeNumber(9)
+    //     tb.writeNumber(4)
+    //     tb.writeCell(
+    //         (new Builder()).storeUint(0b1010001011, 10)
+    //         .storeRef(
+    //             (new Builder()).storeUint(0b111111101, 9)
+    //             .storeRef(
+    //                 (new Builder()).storeUint(0b11111110, 8)
+    //                 .storeRef(
+    //                     (new Builder()).storeUint(0b111111101, 9)
+    //                 )
+    //             )
+    //         )
+    //         .asCell()
+    //     )
+
+    //     // let exp = tb.writeCell
+
+    //     const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+    //     let rc = r.stackReader.readCell()
+    //     console.log("gasUsed: ", r.gasUsed.toString())
+    //     console.log("readCell: ", rc.toString())
+    // });
+
+
+    // it('flag lt value', async () => {
+    //     // the check is done inside beforeEach
+    //     // blockchain and task3 are ready to use
+    //     const tb = new TupleBuilder()
+    //     tb.writeNumber(10)
+    //     tb.writeNumber(4)
+    //     tb.writeCell(
+    //         (new Builder()).storeUint(0b1010001011, 10)
+    //         .storeRef(
+    //             (new Builder()).storeUint(0b111111101, 9)
+    //             .storeRef(
+    //                 (new Builder()).storeUint(0b11111110, 8)
+    //                 .storeRef(
+    //                     (new Builder()).storeUint(0b111111101, 9)
+    //                 )
+    //             )
+    //         )
+    //         .asCell()
+    //     )
+
+    //     // let exp = tb.writeCell
+
+    //     const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+    //     let rc = r.stackReader.readCell()
+    //     console.log("gasUsed: ", r.gasUsed.toString())
+    //     console.log("readCell: ", rc.toString())
+    // });
     // it('flag gt value', async () => {
     //     // the check is done inside beforeEach
     //     // blockchain and task3 are ready to use
