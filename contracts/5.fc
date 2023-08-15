@@ -30,8 +30,8 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
   if (1 >= n) { result~tpush(s); k -= 1; n += 1; if (k == 0) { return result; } }
   int t = f + s;
   if (2 >= n) { result~tpush(t); k -= 1; n += 1; if (k == 0) { return result; } }
-  repeat (n - i    ) { f = s; s = t; t = f + s; }
-  repeat (n + k - i) { f = s; s = t; t = f + s;
+  repeat (n - 3    ) { f = s; s = t; t = f + s; }
+  repeat (n + k - n + 3) { f = s; s = t; t = f + s;
     result~tpush(t);
   }
   return result;
