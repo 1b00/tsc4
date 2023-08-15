@@ -42,13 +42,14 @@
 ;; Points: 5.619197559295318
 ;; GasValue: 366932710
 ;; Points: 5.61715775004039
-
+;; GasValue: 365710931
+;; Points: 5.618150331797134
 () recv_internal() {
 }
 
 (cell) caesar_cipher(int shift, cell text) {
   int LETTERS = 26;
-  ;; shift = shift % LETTERS;
+  shift = shift % LETTERS;
   if (shift == 0) { return text; }
   slice text_s = text.begin_parse();
   int DEPTH = slice_depth(text_s);
@@ -90,7 +91,7 @@
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return caesar_cipher(shift % 26, text);
+  return caesar_cipher(shift, text);
 }
 
 ;; testable
