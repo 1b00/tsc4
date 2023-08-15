@@ -13,6 +13,9 @@
   1923063428480944139667114773918309212080528]
 -}
 
+;; GasValue: 2481151
+;; Points: 5.295680971283039
+
 forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 
 () recv_internal() {
@@ -21,21 +24,15 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
   tuple result = empty_tuple();
-  int i = 0;
   int f = 0;
-  if (i == n) { result~tpush(f); k -= 1; n += 1; if (k == 0) { return result; } } i = i + 1;
+  if (0 == n) { result~tpush(f); k -= 1; n += 1; if (k == 0) { return result; } }
   int s = 1;
-  if (i >= n) { result~tpush(s); k -= 1; n += 1; if (k == 0) { return result; } } i = i + 1;
+  if (1 >= n) { result~tpush(s); k -= 1; n += 1; if (k == 0) { return result; } }
   int t = f + s;
-  if (i >= n) { result~tpush(t); k -= 1; n += 1; if (k == 0) { return result; } } i = i + 1;
-  while (i < n) & (i < 371) {
-    f = s; s = t; t = f + s;
-    i = i + 1;
-  }
-  while (i < n + k) & (k < 256) {
-    f = s; s = t; t = f + s;
+  if (2 >= n) { result~tpush(t); k -= 1; n += 1; if (k == 0) { return result; } }
+  repeat (n - i    ) { f = s; s = t; t = f + s; }
+  repeat (n + k - i) { f = s; s = t; t = f + s;
     result~tpush(t);
-    i = i + 1;
   }
   return result;
 }
