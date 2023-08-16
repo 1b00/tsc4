@@ -43,7 +43,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
   slice next = null();
   builder result = begin_cell();
   int result_bits = 0;
-  int MAX_CELL_BITS = 9;
+  int MAX_CELL_BITS = 1023;
   tuple stack = empty_tuple();
   int init = -1;
   repeat (slice_depth(curr) + 1) {
