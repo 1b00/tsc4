@@ -56,20 +56,21 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     int next_len = next.is_null() ? 0 : slice_bits(next);
     while (curr_len) {
       int needle = 0;
-      if (curr_len < flag_len) {
+      int flag_tail = flag_len - curr_len;
+      if (flag_tail > 0) {
         needle = curr.preload_uint(curr_len);
-        if (next_len > 0) {
-          needle <<= flag_len - curr_len;
-          needle += next.preload_uint(flag_len - curr_len);
+        if (next_len >= flag_tail) {
+          needle <<= flag_tail;
+          needle += next.preload_uint(flag_tail);
         }
       } else {
         needle = curr.preload_uint(flag_len);
       }
       if (needle == flag) {
-        if (curr_len < flag_len) {
+        if (flag_tail > 0) {
           curr~load_uint(curr_len);
-          if (next_len > 0) {
-            next~load_uint(flag_len - curr_len);
+          if (next_len >= flag_tail) {
+            next~load_uint(flag_tail);
           }
         } else {
           curr~load_uint(flag_len);
@@ -87,8 +88,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
           result = begin_cell();
           result_bits = 0;
         }
-        int passthrougth = curr~load_uint(1);
-        result = result.store_uint(passthrougth, 1);
+        result = result.store_uint(curr~load_uint(1), 1);
         result_bits += 1;
       }
       curr_len = slice_bits(curr);
