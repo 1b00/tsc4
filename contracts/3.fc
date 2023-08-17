@@ -52,22 +52,30 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
   repeat (slice_depth(curr) + 1) {
     curr = init ? curr : next; init = 0;
     int curr_len = slice_bits(curr);
-    int zeros_len = 0;
-    while (zeros_len <= curr_len) & (curr.preload_uint(zeros_len + 1) == 0) { zeros_len += 1; }
-    if (zeros_len > 0) {
-      curr~load_uint(zeros_len);
-      if (result_bits + zeros_len > MAX_CELL_BITS) {
-        stack~tpush(result);
-        result = begin_cell();
-        result_bits = 0;
-      }
-      result = result.store_uint(0, zeros_len);
-      result_bits += zeros_len;
-    }
-    int curr_len = slice_bits(curr);
     next = curr.slice_refs() ? curr~load_ref().begin_parse() : null();
     int next_len = next.is_null() ? 0 : slice_bits(next);
     while (curr_len) {
+      ;; ~strdump("curr_len before");
+      ;; ~dump(curr_len);
+      ;; int zeros_len = 0;
+      ;; while (zeros_len + 1 < curr_len)
+      ;;     & (curr.preload_uint(zeros_len + 1) == 0)
+      ;;   { zeros_len += 1; }
+      ;; ~strdump("zeros_len");
+      ;; ~dump(zeros_len);
+      ;; if (zeros_len > 0) {
+      ;;   curr~load_uint(zeros_len);
+      ;;   if (result_bits + zeros_len > MAX_CELL_BITS) {
+      ;;     stack~tpush(result);
+      ;;     result = begin_cell();
+      ;;     result_bits = 0;
+      ;;   }
+      ;;   result = result.store_uint(0, zeros_len);
+      ;;   result_bits += zeros_len;
+      ;; }
+      ;; curr_len = slice_bits(curr);
+      ;; ~strdump("curr_len after");
+      ;; ~dump(curr_len);
       int needle = 0;
       if (curr_len < flag_len) {
         needle = curr.preload_uint(curr_len);
