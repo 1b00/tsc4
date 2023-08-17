@@ -40,13 +40,14 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+  if (slice_bits(linked_list.begin_parse()) == 0) { return begin_cell().end_cell(); }
   int flag_len = ubitsize(flag);
   int value_len = ubitsize(value);
   slice curr = linked_list.begin_parse();
   slice next = null();
   builder result = begin_cell();
   int result_bits = 0;
-  int MAX_CELL_BITS = 999;
+  int MAX_CELL_BITS = 1023;
   tuple stack = empty_tuple();
   int init = -1;
   repeat (slice_depth(curr) + 1) {
