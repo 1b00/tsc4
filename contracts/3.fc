@@ -58,9 +58,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
       int needle = 0;
       if (curr_len < flag_len) {
         needle = curr.preload_uint(curr_len);
-        if (next_len > 0) {
-          needle <<= flag_len - curr_len;
-          needle += next.preload_uint(flag_len - curr_len);
+        int flag_tail = flag_len - curr_len;
+        if (next_len >= flag_tail) {
+          needle <<= flag_tail;
+          needle += next.preload_uint(flag_tail);
         }
       } else {
         needle = curr.preload_uint(flag_len);
@@ -68,8 +69,9 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
       if (needle == flag) {
         if (curr_len < flag_len) {
           curr~load_uint(curr_len);
-          if (next_len > 0) {
-            next~load_uint(flag_len - curr_len);
+          int flag_tail = flag_len - curr_len;
+          if (next_len >= flag_tail) {
+            next~load_uint(flag_tail);
           }
         } else {
           curr~load_uint(flag_len);
