@@ -55,44 +55,22 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     next = curr.slice_refs() ? curr~load_ref().begin_parse() : null();
     int next_len = next.is_null() ? 0 : slice_bits(next);
     while (curr_len) {
-      ;; ~strdump("curr_len before");
-      ;; ~dump(curr_len);
-      ;; int zeros_len = 0;
-      ;; while (zeros_len + 1 < curr_len)
-      ;;     & (curr.preload_uint(zeros_len + 1) == 0)
-      ;;   { zeros_len += 1; }
-      ;; ~strdump("zeros_len");
-      ;; ~dump(zeros_len);
-      ;; if (zeros_len > 0) {
-      ;;   curr~load_uint(zeros_len);
-      ;;   if (result_bits + zeros_len > MAX_CELL_BITS) {
-      ;;     stack~tpush(result);
-      ;;     result = begin_cell();
-      ;;     result_bits = 0;
-      ;;   }
-      ;;   result = result.store_uint(0, zeros_len);
-      ;;   result_bits += zeros_len;
-      ;; }
-      ;; curr_len = slice_bits(curr);
-      ;; ~strdump("curr_len after");
-      ;; ~dump(curr_len);
       int needle = 0;
-      if (curr_len < flag_len) {
+      int tail_len = flag_len - curr_len;
+      if (tail_len > 0) {
         needle = curr.preload_uint(curr_len);
-        int flag_tail = flag_len - curr_len;
-        if (next_len >= flag_tail) {
-          needle <<= flag_tail;
-          needle += next.preload_uint(flag_tail);
+        if (next_len > 0) {
+          needle <<= tail_len;
+          needle += next.preload_uint(tail_len);
         }
       } else {
         needle = curr.preload_uint(flag_len);
       }
       if (needle == flag) {
-        if (curr_len < flag_len) {
+        if (tail_len > 0) {
           curr~load_uint(curr_len);
-          int flag_tail = flag_len - curr_len;
-          if (next_len >= flag_tail) {
-            next~load_uint(flag_tail);
+          if (next_len > 0) {
+            next~load_uint(tail_len);
           }
         } else {
           curr~load_uint(flag_len);
@@ -110,8 +88,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
           result = begin_cell();
           result_bits = 0;
         }
-        int passthrougth = curr~load_uint(1);
-        result = result.store_uint(passthrougth, 1);
+        result = result.store_uint(curr~load_uint(1), 1);
         result_bits += 1;
       }
       curr_len = slice_bits(curr);
