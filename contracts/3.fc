@@ -87,7 +87,8 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
           result = begin_cell();
           result_bits = 0;
         }
-        result = result.store_uint(curr~load_uint(1), 1);
+        int passthrougth = curr~load_uint(1);
+        result = result.store_uint(passthrougth, 1);
         result_bits += 1;
       }
       curr_len = slice_bits(curr);
