@@ -40,7 +40,6 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  if (slice_bits(linked_list.begin_parse()) == 0) { return begin_cell().end_cell(); }
   int flag_len = ubitsize(flag);
   int value_len = ubitsize(value);
   slice curr = linked_list.begin_parse();
