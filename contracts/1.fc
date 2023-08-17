@@ -15,17 +15,24 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if cell_hash(tree) == hash { return tree; }
+  ;; creating tuple with no data, which plays the role of stack
   tuple stack = null();
-  int init = -1;
-  ;; stack~push_back(tree);
-  slice s = tree.begin_parse();
-  while (~ stack.is_null()) | init { init = 0;
-    repeat (s.slice_refs()) {
-      stack~push_back(s~load_ref());
-    }
-    tree = stack~pop_back();
-    if cell_hash(tree) == hash { return tree; }
+  ;; bring the main cell into the stack to process it in the loop
+  stack~push_back(tree);
+  ;; do it until stack is not null
+  while (~ stack.is_null()) {
+      ;; get the cell from the stack and convert it to a slice to be able to process it
+      tree = stack~pop_back();
+
+      if cell_hash(tree) == hash {
+        return tree;
+      }
+
+      ;; if the current slice has any refs, add them to stack
+      slice s = tree.begin_parse();        
+      repeat (s.slice_refs()) {
+          stack~push_back(s~load_ref());
+      }
   }
   return begin_cell().end_cell();
 }
