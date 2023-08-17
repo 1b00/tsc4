@@ -52,6 +52,19 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
   repeat (slice_depth(curr) + 1) {
     curr = init ? curr : next; init = 0;
     int curr_len = slice_bits(curr);
+    int zeros_len = 1;
+    while (slice_bits(curr) >= zeros_len) & (curr.preload_uint(zeros_len) == 0) { zeros_len += 1; }
+    if (zeros_len > 0) {
+      if (result_bits == MAX_CELL_BITS) {
+        stack~tpush(result);
+        result = begin_cell();
+        result_bits = 0;
+      }
+      curr~load_uint(zeros_len);
+      result = result.store_uint(0, zeros_len);
+      result_bits += zeros_len;
+    }
+    int curr_len = slice_bits(curr);
     next = curr.slice_refs() ? curr~load_ref().begin_parse() : null();
     int next_len = next.is_null() ? 0 : slice_bits(next);
     while (curr_len) {
