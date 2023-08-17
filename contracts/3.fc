@@ -54,7 +54,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     int zeros_len = 0;
     while (slice_bits(curr) >= zeros_len + 1) & (curr.preload_uint(zeros_len + 1) == 0) { zeros_len += 1; }
     if (zeros_len > 0) {
-      if (result_bits == MAX_CELL_BITS) {
+      if (result_bits + zeros_len > MAX_CELL_BITS) {
         stack~tpush(result);
         result = begin_cell();
         result_bits = 0;
