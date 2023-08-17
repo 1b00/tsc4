@@ -49,8 +49,8 @@
 
 (cell) caesar_cipher(int shift, cell text) {
   int LETTERS = 26;
-  shift = shift % LETTERS;
-  if (shift == 0) { return text; }
+  ;; shift = shift % LETTERS;
+  ;; if (shift == 0) { return text; }
   slice text_s = text.begin_parse();
   int DEPTH = slice_depth(text_s);
   builder result = begin_cell();
@@ -91,11 +91,13 @@
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return caesar_cipher(shift, text);
+  if (shift == 0) { return text; }
+  return caesar_cipher(shift % 26, text);
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
+  if (shift == 0) { return text; }
   return caesar_cipher(26 - shift % 26, text);
 }
 
