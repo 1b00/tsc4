@@ -49,6 +49,7 @@
 
 (cell) caesar_cipher(int shift, cell text) {
   int LETTERS = 26;
+  if (shift == 0) { return text; }
   slice text_s = text.begin_parse();
   int DEPTH = slice_depth(text_s);
   builder result = begin_cell();
