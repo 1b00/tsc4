@@ -86,7 +86,7 @@ describe('Task3', () => {
 
         const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
 
-        let rc = r.stackReader.readCell().beginParse().loadBits(40).toString();
+        let rc = r.stackReader.readCell().beginParse().loadBits(39).toString();
         expect(rc).toEqual("909FF3FCF9");
         console.log("result: ", rc);
         console.log("gasUsed: ", r.gasUsed.toString())
@@ -121,7 +121,7 @@ describe('Task3', () => {
 
         const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
 
-        let rc = r.stackReader.readCell().beginParse().loadBits(28).toString();
+        let rc = r.stackReader.readCell().beginParse().loadBits(27).toString();
         expect(rc).toEqual("A2A95AD");
         console.log("result: ", rc);
         console.log("gasUsed: ", r.gasUsed.toString())
@@ -156,7 +156,7 @@ describe('Task3', () => {
 
         const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
 
-        let rc = r.stackReader.readCell().beginParse().loadBits(24).toString();
+        let rc = r.stackReader.readCell().beginParse().loadBits(21).toString();
         expect(rc).toEqual("A2AA95");
         console.log("result: ", rc);
         console.log("gasUsed: ", r.gasUsed.toString())
@@ -165,21 +165,25 @@ describe('Task3', () => {
     // 0000001011 111111101 11111111 0000101
     // 00000010101010101010000101
     // 000000101010101010100001
+    //
+    // 000000101111111110111111011101
+    // 0000001010110111111011101
+    // 00000010101101111110
 
     it('zeros 15 -> 2', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to use
         const tb = new TupleBuilder()
-        tb.writeNumber(15)
+        tb.writeNumber(127)
         tb.writeNumber(2)
         tb.writeCell(
             (new Builder()).storeUint(0b0000001011, 10)
             .storeRef(
                 (new Builder()).storeUint(0b111111101, 9)
                 .storeRef(
-                    (new Builder()).storeUint(0b11111111, 8)
+                    (new Builder()).storeUint(0b11111011, 8)
                     .storeRef(
-                        (new Builder()).storeUint(0b0000101, 7)
+                        (new Builder()).storeUint(0b101, 3)
                     )
                 )
             )
@@ -190,8 +194,8 @@ describe('Task3', () => {
 
         const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
 
-        let rc = r.stackReader.readCell().beginParse().loadBits(24).toString();
-        expect(rc).toEqual("A2AA95");
+        let rc = r.stackReader.readCell().beginParse().loadBits(20).toString();
+        expect(rc).toEqual("000AAA85");
         console.log("result: ", rc);
         console.log("gasUsed: ", r.gasUsed.toString())
     });
