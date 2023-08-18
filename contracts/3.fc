@@ -44,7 +44,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
   int flag_len = ubitsize(flag);
   int value_len = ubitsize(value);
   slice curr = linked_list.begin_parse();
-  int curr_len = slice_bits(curr);
+  int curr_len = 0;
   slice next = null();
   int next_len = 0;
   int zeros_len = 0;
@@ -52,9 +52,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
   int result_bits = 0;
   int MAX_CELL_BITS = 1023;
   tuple stack = empty_tuple();
-  int init = -1;
   repeat (slice_depth(curr) + 1) {
-    curr = init ? curr : next; init = 0;
     zeros_len = zeros(curr);
     if (zeros_len > 0) {
       curr~load_uint(zeros_len);
@@ -120,6 +118,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
       }
       curr_len = slice_bits(curr);
     }
+    curr = next;
   }
   while (stack.tlen() > 0) {
     result = stack~tpop().store_ref(result.end_cell());
