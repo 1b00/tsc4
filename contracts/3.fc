@@ -122,22 +122,18 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
           result_bits += 1;
         }
       }
-      if (~ stop_searching) {
-        zeros_len = zeros(curr);
-        if (zeros_len > 0) {
-          curr~load_uint(zeros_len);
-          if (result_bits + zeros_len > MAX_CELL_BITS) {
-            stack~tpush(result);
-            result = begin_cell();
-            result_bits = 0;
-          }
-          result = result.store_uint(0, zeros_len);
-          result_bits += zeros_len;
+      zeros_len = zeros(curr);
+      if (zeros_len > 0) {
+        curr~load_uint(zeros_len);
+        if (result_bits + zeros_len > MAX_CELL_BITS) {
+          stack~tpush(result);
+          result = begin_cell();
+          result_bits = 0;
         }
-        curr_len = slice_bits(curr);
-      } else {
-        curr_len = 0;
+        result = result.store_uint(0, zeros_len);
+        result_bits += zeros_len;
       }
+      curr_len = slice_bits(curr);
       ;; print_cell(result.end_cell().begin_parse());
       ;; ~strdump("print_cell");
       ;; slice s = result.end_cell().begin_parse();
