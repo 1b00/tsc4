@@ -75,6 +75,19 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         if (next_len >= flag_tail) {
           needle <<= flag_tail;
           needle += next.preload_uint(flag_tail);
+        } else {
+          if (result_bits + curr_len + next_len > MAX_CELL_BITS) {
+            stack~tpush(result);
+            result = begin_cell();
+          }
+          result = result.store_uint(curr~load_uint(curr_len), curr_len);
+          if (next_len) {
+            result = result.store_uint(next~load_uint(next_len), next_len);
+          }
+          while (stack.tlen() > 0) {
+            result = stack~tpop().store_ref(result.end_cell());
+          }
+          return result.end_cell();
         }
       } else {
         needle = curr.preload_uint(flag_len);
@@ -85,19 +98,6 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
           int flag_tail = flag_len - curr_len;
           if (next_len >= flag_tail) {
             next~load_uint(flag_tail);
-          } else {
-            ;; if (result_bits + curr_len + next_len > MAX_CELL_BITS) {
-            ;;   stack~tpush(result);
-            ;;   result = begin_cell();
-            ;; }
-            ;; result = result.store_uint(curr~load_uint(curr_len), curr_len);
-            ;; if (next_len) {
-            ;;   result = result.store_uint(next~load_uint(next_len), next_len);
-            ;; }
-            ;; while (stack.tlen() > 0) {
-            ;;   result = stack~tpop().store_ref(result.end_cell());
-            ;; }
-            ;; return result.end_cell();
           }
         } else {
           curr~load_uint(flag_len);
