@@ -162,7 +162,41 @@ describe('Task3', () => {
         console.log("gasUsed: ", r.gasUsed.toString())
     });
 
+    // 0000001011 111111101 11111111 0000101
+    // 00000010101010101010000101
+    // 000000101010101010100001
 
+    it('zeros 15 -> 2', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to use
+        const tb = new TupleBuilder()
+        tb.writeNumber(15)
+        tb.writeNumber(2)
+        tb.writeCell(
+            (new Builder()).storeUint(0b0000001011, 10)
+            .storeRef(
+                (new Builder()).storeUint(0b111111101, 9)
+                .storeRef(
+                    (new Builder()).storeUint(0b11111111, 8)
+                    .storeRef(
+                        (new Builder()).storeUint(0b0000101, 7)
+                    )
+                )
+            )
+            .asCell()
+        )
+
+        // let exp = tb.writeCell
+
+        const r = await blockchain.runGetMethod(task3.address, "find_and_replace", tb.build())
+
+        let rc = r.stackReader.readCell().beginParse().loadBits(24).toString();
+        expect(rc).toEqual("A2AA95");
+        console.log("result: ", rc);
+        console.log("gasUsed: ", r.gasUsed.toString())
+    });
+
+    
     // it('flag lt value', async () => {
     //     // the check is done inside beforeEach
     //     // blockchain and task3 are ready to use
