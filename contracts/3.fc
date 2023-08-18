@@ -111,7 +111,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
             ;; ~dump(next.preload_uint(next_len));
             result = result.store_uint(next~load_uint(next_len), next_len);
           }
-          result_bits = curr_len + next_len;
+          while (stack.tlen() > 0) {
+            result = stack~tpop().store_ref(result.end_cell());
+          }
+          return result.end_cell();
         } else {  
           if (result_bits == MAX_CELL_BITS) {
             stack~tpush(result);
