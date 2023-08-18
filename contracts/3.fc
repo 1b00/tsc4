@@ -68,7 +68,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     curr_len = slice_bits(curr);
     next = curr.slice_refs() ? curr~load_ref().begin_parse() : null();
     int next_len = next.is_null() ? 0 : slice_bits(next);
-    while (curr_len) {
+    while (curr_len & ~ stop_searching) {
       int needle = 0;
       if (curr_len < flag_len) {
         needle = curr.preload_uint(curr_len);
