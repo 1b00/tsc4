@@ -47,6 +47,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
   int curr_len = slice_bits(curr);
   slice next = null();
   int next_len = 0;
+  int zeros_len = 0;
   builder result = begin_cell();
   int result_bits = 0;
   int MAX_CELL_BITS = 1023;
@@ -54,7 +55,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
   int init = -1;
   repeat (slice_depth(curr) + 1) {
     curr = init ? curr : next; init = 0;
-    int zeros_len = zeros(curr);
+    zeros_len = zeros(curr);
     if (zeros_len > 0) {
       curr~load_uint(zeros_len);
       if (result_bits + zeros_len > MAX_CELL_BITS) {
@@ -106,7 +107,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         result = result.store_uint(curr~load_uint(1), 1);
         result_bits += 1;
       }
-      int zeros_len = zeros(curr);
+      zeros_len = zeros(curr);
       if (zeros_len > 0) {
         curr~load_uint(zeros_len);
         if (result_bits + zeros_len > MAX_CELL_BITS) {
@@ -116,7 +117,6 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         }
         result = result.store_uint(0, zeros_len);
         result_bits += zeros_len;
-        ;; curr_len = slice_bits(curr);
       }
       curr_len = slice_bits(curr);
     }
