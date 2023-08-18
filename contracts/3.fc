@@ -50,7 +50,6 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
   int zeros_len = 0;
   builder result = begin_cell();
   int result_bits = 0;
-  int stop_searching = 0;
   int MAX_CELL_BITS = 1023;
   tuple stack = empty_tuple();
   repeat (slice_depth(curr) + 1) {
@@ -68,7 +67,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     curr_len = slice_bits(curr);
     next = curr.slice_refs() ? curr~load_ref().begin_parse() : null();
     int next_len = next.is_null() ? 0 : slice_bits(next);
-    while (curr_len & ~ stop_searching) {
+    while (curr_len) {
       int needle = 0;
       if (curr_len < flag_len) {
         needle = curr.preload_uint(curr_len);
@@ -76,8 +75,6 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         if (next_len >= flag_tail) {
           needle <<= flag_tail;
           needle += next.preload_uint(flag_tail);
-        } else {
-          stop_searching = -1;
         }
       } else {
         needle = curr.preload_uint(flag_len);
@@ -88,6 +85,19 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
           int flag_tail = flag_len - curr_len;
           if (next_len >= flag_tail) {
             next~load_uint(flag_tail);
+          } else {
+            ;; if (result_bits + curr_len + next_len > MAX_CELL_BITS) {
+            ;;   stack~tpush(result);
+            ;;   result = begin_cell();
+            ;; }
+            ;; result = result.store_uint(curr~load_uint(curr_len), curr_len);
+            ;; if (next_len) {
+            ;;   result = result.store_uint(next~load_uint(next_len), next_len);
+            ;; }
+            ;; while (stack.tlen() > 0) {
+            ;;   result = stack~tpop().store_ref(result.end_cell());
+            ;; }
+            ;; return result.end_cell();
           }
         } else {
           curr~load_uint(flag_len);
@@ -100,30 +110,13 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         result = result.store_uint(value, value_len);
         result_bits += value_len;
       } else {
-        if (stop_searching) {
+        if (result_bits == MAX_CELL_BITS) {
           stack~tpush(result);
-          ;; ~strdump("stop_searching");
-          ;; ~dump(curr_len);
-          ;; ~dump(curr.preload_uint(curr_len));
-          ;; ~dump(next_len);
-          result = begin_cell().store_uint(curr~load_uint(curr_len), curr_len);
-          if (next_len) {
-            ;; ~dump(next.preload_uint(next_len));
-            result = result.store_uint(next~load_uint(next_len), next_len);
-          }
-          while (stack.tlen() > 0) {
-            result = stack~tpop().store_ref(result.end_cell());
-          }
-          return result.end_cell();
-        } else {  
-          if (result_bits == MAX_CELL_BITS) {
-            stack~tpush(result);
-            result = begin_cell();
-            result_bits = 0;
-          }
-          result = result.store_uint(curr~load_uint(1), 1);
-          result_bits += 1;
+          result = begin_cell();
+          result_bits = 0;
         }
+        result = result.store_uint(curr~load_uint(1), 1);
+        result_bits += 1;
       }
       zeros_len = zeros(curr);
       if (zeros_len > 0) {
@@ -137,12 +130,6 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         result_bits += zeros_len;
       }
       curr_len = slice_bits(curr);
-      ;; print_cell(result.end_cell().begin_parse());
-      ;; ~strdump("print_cell");
-      ;; slice s = result.end_cell().begin_parse();
-      ;; while (slice_bits(s)) {
-      ;;   ~dump(s~load_uint(1));
-      ;; }
     }
     curr = next;
   }
